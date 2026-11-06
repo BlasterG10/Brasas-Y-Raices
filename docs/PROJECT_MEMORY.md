@@ -57,6 +57,20 @@ Estas funciones deben confirmarse en el código vigente antes de depender de ell
 5. **Pruebas:** validar carga de assets, ausencia de errores JS, inicio de partida, movimiento, interacción, combate, guardado/continuar y despliegue.
 
 ## Registro de cambios (append-only)
+### 2026-11-06 — Actualización visual v0.5 e integración de sprites
+- Leídos `README.md`, esta memoria y el `index.html` real antes de editar, según la regla obligatoria.
+- Añadido `assets/sprites/brasas-atlas.svg`: atlas SVG original de 256×256, cuadrícula 4×4 de celdas de 64 px, con cuatro poses del aventurero, cuatro criaturas originales, árbol, arbusto de bayas, troncos, refugio, flores, hierba, cristal y roca.
+- Modificado `index.html` para cargar el atlas desde el repositorio y dibujar con él al jugador, árboles, arbustos, flores, hierba y refugio; se conserva arte canvas de respaldo si el atlas no carga.
+- Suavizado el seguimiento del jugador y la cámara con interpolación exponencial basada en delta time; aumentado la repetición de movimiento táctil de 145 ms a 112 ms.
+- Añadido ajuste de resolución del canvas según tamaño real y `devicePixelRatio` (hasta 2×), con `ResizeObserver`; quitado el renderizado CSS pixelado que emborronaba la presentación al escalar.
+- Renovado el marco del escenario, profundidad de botones, chips de recursos, espaciado y contraste de la interfaz. Añadido marcador visible `EDICIÓN VISUAL 0.5` para identificar la build.
+- Actualizado README: versión 0.5 y funciones visuales integradas.
+- Validación ejecutada: sintaxis del JavaScript extraído de `index.html` mediante compilación `new Function` = OK; comprobados en el HTML el path del atlas, llamadas de sprites, DPR, ResizeObserver, suavizado y marcador; comprobado el SVG y sus dimensiones.
+- Commit del atlas: `cdd72869b0605f7f6336b57e79b265b1d32ff305`.
+- Commit de `index.html`: `b4273140c8a85bbeb5a853029765c87c2d6cf343`.
+- Commit del README: `b077b69fb0de3f77f80d26b4ed4bec42f7890f8f`.
+- **Pendiente/no verificado:** no se pudo consultar la configuración/estado de GitHub Pages ni abrir la URL publicada desde este entorno; por tanto, no se afirma que el sitio público ya esté sirviendo esta versión. Tampoco se ha probado en un iPhone físico. El estilo es 2D cenital con profundidad visual simulada; no es un motor 3D real.
+
 ### 2026-11-06 — Creación de memoria maestra
 - Añadido este documento para preservar continuidad y evitar perder decisiones entre sesiones.
 - Añadidas reglas obligatorias de lectura previa, inspección del código, implementación real, validación y registro.
