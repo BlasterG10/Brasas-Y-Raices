@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#14251d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Brasas y Raíces — Aventura</title>
+<style>
+:root{--bg:#101b16;--panel:#1d3026;--cream:#f4e8c8;--gold:#e7bd62;--red:#c95843;--muted:#b7c4ad}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--cream);font-family:system-ui,-apple-system,Segoe UI,sans-serif;touch-action:none;user-select:none}
+#app{height:100dvh;display:flex;flex-direction:column;max-width:980px;margin:auto;padding:env(safe-area-inset-top) 10px env(safe-area-inset-bottom);gap:8px}
+header{height:48px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;padding:0 5px}
+.brand{font-weight:1000;letter-spacing:.08em;font-size:15px}.brand em{font-style:normal;color:var(--gold)}
+#hud{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.chip{font-size:11px;font-weight:800;background:#263b2d;border:1px solid #526b4d;border-radius:20px;padding:5px 9px;white-space:nowrap}
+#stage{position:relative;flex:1;min-height:0;border:3px solid #526a49;border-radius:13px;overflow:hidden;background:#6fae67;box-shadow:0 7px 0 #09110d}
+canvas{width:100%;height:100%;display:block;image-rendering:pixelated}
+#topnote{position:absolute;top:9px;left:9px;background:#102219d9;border:1px solid #c7a65c;border-radius:7px;padding:5px 8px;font-size:10px;font-weight:900;letter-spacing:.08em}
+#toast{position:absolute;left:8px;right:8px;bottom:8px;padding:9px 12px;border-radius:9px;background:#f5e9c9;color:#263528;border:2px solid #85603b;font-weight:750;font-size:12px;display:none;box-shadow:0 3px #30251c}
+#bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-shrink:0;min-height:116px;padding:0 5px 5px}
+#pad{display:grid;grid-template-columns:42px 42px 42px;grid-template-rows:36px 36px 36px;gap:3px}
+button{font:inherit;cursor:pointer;touch-action:none}
+.dir,.act{border:1px solid #82936a;background:linear-gradient(#38553d,#203729);color:#fff3d5;border-radius:10px;font-weight:900;box-shadow:0 3px #0b130e;font-size:18px}
+.dir:active,.act:active,.move:active{transform:translateY(2px);box-shadow:none}
+.up{grid-column:2}.left{grid-column:1;grid-row:2}.down{grid-column:2;grid-row:2}.right{grid-column:3;grid-row:2}
+#buttons{display:grid;grid-template-columns:repeat(2,minmax(72px,1fr));gap:7px;width:min(48%,220px)}
+.act{height:48px;font-size:11px;letter-spacing:.04em}.act.primary{background:linear-gradient(#bd5b42,#813c30);border-color:#e6a078}
+#help{font-size:10px;color:#b9c8b4;text-align:center;line-height:1.3;flex-shrink:0;padding-bottom:3px}
+.modal{position:fixed;inset:0;z-index:10;background:#07110de8;display:flex;align-items:center;justify-content:center;padding:18px}
+.dialog{width:min(460px,100%);max-height:90dvh;overflow:auto;background:linear-gradient(145deg,#f5ebcf,#ddc99b);color:#26372b;border:4px solid #b58c45;border-radius:17px;padding:18px;box-shadow:0 10px #080e0b;text-align:center}
+.dialog h1,.dialog h2{margin:0 0 8px;color:#813d2e}.dialog h1{font-size:clamp(24px,7vw,36px);letter-spacing:.04em}.dialog p{font-size:13px;line-height:1.5}.dialog .sub{font-weight:900;color:#92603a;letter-spacing:.13em;font-size:10px}
+.bigbtn{width:100%;border:0;border-radius:10px;padding:13px;background:#a74736;color:white;font-weight:950;font-size:14px;margin-top:8px;box-shadow:0 4px #713125}
+.secondary{background:#435d43}.rowbtn{display:flex;gap:8px}.rowbtn>*{flex:1}
+#battle{display:none}.battlebox{width:min(480px,100%);background:#f4e8c8;color:#26372b;border:4px solid #b58c45;border-radius:15px;padding:13px;box-shadow:0 9px #080e0b}
+.battlebox h2{color:#813d2e;margin:0 0 7px}.arena{display:flex;justify-content:space-around;align-items:center;min-height:150px;border:2px solid #778c58;border-radius:10px;background:linear-gradient(#b9d6a1 0 55%,#7eae67 55%);color:#24362b}
+.creature{font-size:58px;filter:drop-shadow(3px 4px #0003)}.monname{font-weight:950;font-size:12px}.stat{font-size:10px;font-weight:850;margin:3px 0}.bar{width:100px;height:8px;background:#8c9079;border:1px solid #4b5942;border-radius:8px;overflow:hidden}.fill{height:100%;background:#50a65a;width:100%}
+#battletext{min-height:38px;font-size:12px;font-weight:850;margin:8px 0}.moves{display:grid;grid-template-columns:1fr 1fr;gap:7px}.move{padding:11px 5px;border:2px solid #94764c;border-radius:9px;background:#fff3d4;color:#2c392b;font-size:12px;font-weight:900}
+#journal .dialog{text-align:left}#journal ul{padding-left:20px;font-size:13px;line-height:1.8}
+@media(min-width:700px){#app{padding:12px 20px}#bottom{min-height:100px}#pad{grid-template-columns:48px 48px 48px;grid-template-rows:40px 40px 40px}#buttons{width:230px}.act{height:44px}}
+</style>
+</head>
+<body>
+<div id="app">
+<header><div class="brand">🔥 BRASAS <em>Y RAÍCES</em></div><div id="hud"><span class="chip" id="wood">🪵 0</span><span class="chip" id="berries">🍓 0</span><span class="chip" id="orbs">🔮 2</span><span class="chip" id="team">🐾 1</span></div></header>
+<main id="stage"><canvas id="world" width="480" height="320"></canvas><div id="topnote">VALLE DE LOS BROTES · DÍA 1</div><div id="toast"></div></main>
+<section id="bottom"><div id="pad"><button class="dir up" data-dir="up">▲</button><button class="dir left" data-dir="left">◀</button><button class="dir down" data-dir="down">▼</button><button class="dir right" data-dir="right">▶</button></div><div id="buttons"><button class="act primary" id="use">A · INTERACTUAR</button><button class="act" id="bag">🎒 MOCHILA</button><button class="act" id="teamBtn">🐾 EQUIPO</button><button class="act" id="save">💾 GUARDAR</button></div></section>
+<div id="help">Flechas o WASD para caminar · A / Enter para interactuar · Busca madera y bayas</div>
+</div>
+<div class="modal" id="intro"><div class="dialog"><div class="sub">UNA AVENTURA DE SUPERVIVENCIA Y CRIATURAS</div><h1>BRASAS Y RAÍCES</h1><p>Un valle olvidado, un refugio en ruinas y criaturas elementales que aún protegen el bosque. Reúne recursos, reconstruye tu hogar y forma un equipo para explorar más lejos.</p><p><b>Tu primera misión:</b> consigue 5 maderas y 2 bayas, y vuelve al refugio.</p><button class="bigbtn" id="start">COMENZAR AVENTURA</button><button class="bigbtn secondary" id="continue" style="display:none">CONTINUAR PARTIDA</button></div></div>
+<div class="modal" id="battle"><div class="battlebox"><h2>¡Una criatura salvaje!</h2><div class="arena"><div><div class="creature" id="enemyEmoji">🌿</div><div class="monname" id="enemyName">Musguito</div><div class="stat" id="enemyStat">PS 18/18</div><div class="bar"><div class="fill" id="enemyBar"></div></div></div><div><div class="creature">🔥</div><div class="monname">Briz</div><div class="stat" id="heroStat">PS 28/28</div><div class="bar"><div class="fill" id="heroBar"></div></div></div></div><div id="battletext">¡Prepárate!</div><div class="moves"><button class="move" data-move="spark">🔥 Chispa</button><button class="move" data-move="tackle">💥 Golpe</button><button class="move" data-move="orb">🔮 Esfera de vínculo</button><button class="move" data-move="berry">🍓 Usar baya</button><button class="move" data-move="run" style="grid-column:span 2">🏃 Retirarse</button></div></div></div>
+<div class="modal" id="journal" style="display:none"><div class="dialog"><h2 id="journalTitle">Mochila</h2><div id="journalBody"></div><button class="bigbtn" id="closeJournal">VOLVER AL JUEGO</button></div></div>
+<script>
+(()=>{
+'use strict';
+const canvas=document.getElementById('world'),g=canvas.getContext('2d');
+const $=id=>document.getElementById(id);
+const TILE=20,MW=40,MH=32, SAVE='brasas-raices-save-v1';
+let map=[],player={x:7,y:8,dir:'down'},inventory={wood:0,berries:0,orbs:2},team=[{name:'Briz',emoji:'🔥',level:3,hp:28,max:28,atk:6}],refuge=0,mode='world',battle=null,toastTimer=0,encounterStep=0,steps=0;
+const creatures=[{name:'Musguito',emoji:'🌱',hp:18,atk:4,weak:'fire'},{name:'Chisquín',emoji:'🦊',hp:16,atk:5,weak:'water'},{name:'Rocapín',emoji:'🪨',hp:23,atk:4,weak:'fire'},{name:'Brumita',emoji:'💧',hp:20,atk:4,weak:'plant'}];
+function makeMap(){for(let y=0;y<MH;y++){map[y]=[];for(let x=0;x<MW;x++){let v='grass';if(x===0||y===0||x===MW-1||y===MH-1)v='wall';if((x>25&&x<34&&y>3&&y<9)||(x>29&&x<37&&y>8&&y<11))v='water';if((x>3&&x<22&&y>12&&y<15)||(x>11&&x<14&&y>7&&y<24))v='path';map[y][x]=v;}}
+[[5,5],[22,6],[25,20],[8,23],[36,23],[19,5],[30,20],[4,17]].forEach(([x,y])=>map[y][x]='tree');
+[[6,19],[20,22],[34,17],[36,7],[9,5],[24,25]].forEach(([x,y])=>map[y][x]='berry');
+for(let y=18;y<28;y++)for(let x=26;x<38;x++)if(map[y][x]==='grass'&&Math.random()>.25)map[y][x]='tall';
+}
+function notify(t){const el=$('toast');el.textContent=t;el.style.display='block';toastTimer=260}
+function updateHud(){$('wood').textContent='🪵 '+inventory.wood;$('berries').textContent='🍓 '+inventory.berries;$('orbs').textContent='🔮 '+inventory.orbs;$('team').textContent='🐾 '+team.length;}
+function tileAt(x,y){return map[y]?.[x]||'wall'}
+function blocked(x,y){return ['wall','water','tree'].includes(tileAt(x,y))}
+function draw(){const sx=player.x*TILE-canvas.width/2+TILE/2,sy=player.y*TILE-canvas.height/2+TILE/2;g.clearRect(0,0,480,320);
+for(let py=0;py<17;py++)for(let px=0;px<25;px++){let x=Math.floor(sx/TILE)+px,y=Math.floor(sy/TILE)+py,rx=px*TILE-(sx%TILE),ry=py*TILE-(sy%TILE),v=tileAt(x,y);
+g.fillStyle=v==='wall'?'#326346':v==='water'?'#4c9cb7':v==='path'?'#c4a66e':v==='tall'?'#639a56':'#79b66c';g.fillRect(rx,ry,TILE,TILE);
+if(v==='grass'){g.fillStyle='#91cb78';g.fillRect(rx+4,ry+5,2,2);g.fillRect(rx+14,ry+14,2,2)}
+if(v==='path'){g.fillStyle='#d8bf86';g.fillRect(rx+3,ry+4,3,2);g.fillRect(rx+13,ry+13,2,3)}
+if(v==='water'){g.fillStyle='#9bd4d4';g.fillRect(rx+3,ry+6,8,1);g.fillRect(rx+11,ry+14,6,1)}
+if(v==='tree'){g.fillStyle='#765033';g.fillRect(rx+8,ry+9,5,11);g.fillStyle='#28643c';g.fillRect(rx+3,ry+3,14,12);g.fillStyle='#39844a';g.fillRect(rx+6,ry+1,9,10)}
+if(v==='berry'){g.fillStyle='#28613b';g.fillRect(rx+4,ry+6,12,11);g.fillStyle='#e74e58';g.fillRect(rx+6,ry+5,4,4);g.fillRect(rx+12,ry+10,4,4)}
+if(v==='tall'){g.strokeStyle='#397d45';g.lineWidth=2;g.beginPath();g.moveTo(rx+5,ry+18);g.lineTo(rx+8,ry+7);g.moveTo(rx+12,ry+18);g.lineTo(rx+15,ry+6);g.stroke()}
+}
+let hx=15*TILE-sx,hy=9*TILE-sy;g.fillStyle='#92633d';g.fillRect(hx,hy+12,52,29);g.fillStyle='#65402f';g.fillRect(hx-4,hy+5,60,12);g.fillStyle='#44352a';g.fillRect(hx+20,hy+23,11,18);g.fillStyle='#d7c18d';g.fillRect(hx+38,hy+21,8,8);
+if(refuge){g.fillStyle='#d4a34e';g.fillRect(hx+9,hy-1,35,7);g.fillStyle='#8d4c35';g.fillRect(hx+15,hy-8,24,8)}
+let px=player.x*TILE-sx,py=player.y*TILE-sy;g.fillStyle='#f1c28d';g.fillRect(px+6,py+4,9,9);g.fillStyle='#75432c';g.fillRect(px+5,py+2,11,5);g.fillStyle='#c34f3f';g.fillRect(px+5,py+12,12,6);g.fillStyle='#393443';g.fillRect(px+5,py+18,4,2);g.fillRect(px+13,py+18,4,2);g.fillStyle='#202020';g.fillRect(px+8,py+8,2,2);g.fillRect(px+13,py+8,2,2);
+}
+function loop(){draw();if(toastTimer>0&&--toastTimer===0)$('toast').style.display='none';requestAnimationFrame(loop)}
+function move(d){if(mode!=='world')return;player.dir=d;let x=player.x,y=player.y;if(d==='up')y--;if(d==='down')y++;if(d==='left')x--;if(d==='right')x++;if(!blocked(x,y)){player.x=x;player.y=y;steps++;if(tileAt(x,y)==='tall'&&steps%4===0&&Math.random()<.34)startBattle();}}
+let repeatTimer=null;document.querySelectorAll('[data-dir]').forEach(b=>{const d=b.dataset.dir;b.addEventListener('pointerdown',e=>{e.preventDefault();move(d);clearInterval(repeatTimer);repeatTimer=setInterval(()=>move(d),145)});['pointerup','pointerleave','pointercancel'].forEach(ev=>b.addEventListener(ev,()=>clearInterval(repeatTimer)))});
+function interact(){if(mode!=='world')return;let x=player.x,y=player.y,tx=x,ty=y;if(player.dir==='up')ty--;if(player.dir==='down')ty++;if(player.dir==='left')tx--;if(player.dir==='right')tx++;
+for(const [a,b] of [[tx,ty],[x,y]]){let v=tileAt(a,b);if(v==='tree'){inventory.wood+=2;map[b][a]='grass';notify('Recolectaste 2 maderas. ¡Úsalas para reparar el refugio!');updateHud();return}if(v==='berry'){inventory.berries++;map[b][a]='grass';notify('Encontraste una baya medicinal.');updateHud();return}}
+if(Math.abs(x-15)+Math.abs(y-9)<4){if(inventory.wood>=5&&inventory.berries>=2){inventory.wood-=5;inventory.berries-=2;refuge++;notify('¡Refugio reconstruido! El valle vuelve a tener un hogar. Misión completada.');updateHud();save()}else notify('Para reconstruir: necesitas 5 maderas y 2 bayas.');return}
+if(tileAt(tx,ty)==='tall')startBattle();else notify('Explora la hierba alta para encontrar criaturas. Busca árboles 🌳 y arbustos 🍓.');}
+$('use').onclick=interact;
+function showJournal(title,body){$('journalTitle').textContent=title;$('journalBody').innerHTML=body;$('journal').style.display='flex';mode='journal'}
+$('bag').onclick=()=>showJournal('🎒 Mochila','<ul><li>Madera: '+inventory.wood+'</li><li>Bayas medicinales: '+inventory.berries+'</li><li>Esferas de vínculo: '+inventory.orbs+'</li><li>Refugio: nivel '+refuge+'</li></ul><p>Consejo: interactúa mirando hacia un árbol o arbusto para recoger recursos.</p>');
+$('teamBtn').onclick=()=>showJournal('🐾 Tu equipo','<ul>'+team.map(t=>'<li>'+t.emoji+' <b>'+t.name+'</b> · Nivel '+t.level+' · PS '+t.hp+'/'+t.max+'</li>').join('')+'</ul><p>Las criaturas que vincules se unirán a tu equipo y te ayudarán en los encuentros.</p>');
+$('closeJournal').onclick=()=>{$('journal').style.display='none';mode='world'};
+function startBattle(){if(mode!=='world')return;let wild=creatures[Math.floor(Math.random()*creatures.length)];battle={...wild,max:wild.hp,hero:team[0].hp,maxHero:team[0].max};mode='battle';$('enemyEmoji').textContent=wild.emoji;$('enemyName').textContent=wild.name;$('battletext').textContent='¡'+wild.name+' apareció entre la hierba!';$('battle').style.display='flex';updateBattle()}
+function updateBattle(){if(!battle)return;$('enemyStat').textContent='PS '+battle.hp+'/'+battle.max;$('heroStat').textContent='PS '+battle.hero+'/'+battle.maxHero;$('enemyBar').style.width=(100*battle.hp/battle.max)+'%';$('heroBar').style.width=(100*battle.hero/battle.maxHero)+'%'}
+function endBattle(text){$('battletext').textContent=text;setTimeout(()=>{$('battle').style.display='none';if(battle){team[0].hp=battle.hero}battle=null;mode='world';updateHud()},950)}
+document.querySelectorAll('[data-move]').forEach(btn=>btn.onclick=()=>{if(!battle)return;let m=btn.dataset.move;if(m==='run'){endBattle('Te alejaste con cuidado.');return}if(m==='berry'){if(!inventory.berries){$('battletext').textContent='No tienes bayas.';return}inventory.berries--;battle.hero=Math.min(battle.maxHero,battle.hero+12);$('battletext').textContent='Briz recuperó energía con una baya.';updateHud();updateBattle();enemyTurn();return}
+if(m==='orb'){if(!inventory.orbs){$('battletext').textContent='No te quedan esferas de vínculo.';return}inventory.orbs--;let chance=battle.hp/battle.max<.55?.8:.28;updateHud();if(Math.random()<chance){team.push({name:battle.name,emoji:battle.emoji,level:2,hp:battle.max,max:battle.max,atk:battle.atk});endBattle('¡Vínculo creado! '+battle.name+' se unió a tu equipo.');return}else{$('battletext').textContent='La criatura se liberó de la esfera. ¡Resiste!';enemyTurn();return}}
+let damage=m==='spark'?9:6;battle.hp=Math.max(0,battle.hp-damage);$('battletext').textContent='¡Briz usó '+(m==='spark'?'Chispa':'Golpe')+'!';updateBattle();if(battle.hp<=0){team[0].level++;battle.hero=Math.min(battle.maxHero,battle.hero+5);endBattle('¡Victoria! Briz subió de experiencia.');return}enemyTurn()});
+function enemyTurn(){setTimeout(()=>{if(!battle)return;let dmg=battle.atk;battle.hero=Math.max(0,battle.hero-dmg);$('battletext').textContent=battle.name+' contraatacó. Briz perdió '+dmg+' PS.';updateBattle();if(battle.hero<=0)endBattle('Briz quedó agotado. Volviste al refugio.');},450)}
+function save(){try{localStorage.setItem(SAVE,JSON.stringify({player,inventory,team,refuge,map}));notify('Partida guardada en este dispositivo.')}catch(e){notify('No se pudo guardar en este navegador.')}}
+function load(){try{let d=JSON.parse(localStorage.getItem(SAVE));if(!d)return false;player=d.player;inventory=d.inventory;team=d.team;refuge=d.refuge;map=d.map;updateHud();return true}catch(e){return false}}
+$('save').onclick=save;
+$('start').onclick=()=>{$('intro').style.display='none';mode='world';notify('Misión: consigue 5 maderas y 2 bayas. ¡El refugio te espera!')};
+$('continue').onclick=()=>{if(load()){$('intro').style.display='none';mode='world';notify('¡Qué bueno verte de vuelta!')}};
+window.addEventListener('keydown',e=>{let d={ArrowUp:'up',w:'up',ArrowDown:'down',s:'down',ArrowLeft:'left',a:'left',ArrowRight:'right',d:'right'}[e.key];if(d){e.preventDefault();move(d)}if(e.key==='Enter'||e.key===' '||e.key==='z'){e.preventDefault();interact()}});
+makeMap();if(localStorage.getItem(SAVE))$('continue').style.display='block';updateHud();loop();
+})();
+</script>
+</body></html>
