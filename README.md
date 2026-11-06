@@ -2,7 +2,7 @@
 
 > **REGLA OBLIGATORIA PARA EL ASISTENTE:** Antes de realizar cualquier trabajo en este repositorio, lee este README y después lee completo [docs/PROJECT_MEMORY.md](docs/PROJECT_MEMORY.md). Esa memoria es la fuente de continuidad del proyecto: contiene el estado real, decisiones, cambios, elementos pendientes y registro histórico. No empieces a editar desde recuerdos de chat. Después de cada tarea, actualiza la memoria con lo que realmente cambiaste, lo que quitaste, las pruebas ejecutadas, el commit y lo que queda pendiente. Esta regla aplica en todas las sesiones futuras.
 
-**Prototipo jugable v0.2** — aventura original de exploración, supervivencia ligera, construcción y criaturas elementales.
+**Prototipo jugable v0.5 — edición visual con sprites** — aventura original de exploración, supervivencia ligera, construcción y criaturas elementales.
 
 ## Jugar
 Una vez habilitado GitHub Pages, juega desde el navegador en:
@@ -28,6 +28,8 @@ Reúne **5 maderas** y **2 bayas**, regresa al refugio y reconstruye el hogar. E
 - [x] Encuentros y combate por turnos
 - [x] Vincular criaturas
 - [x] Guardado local
+- [x] Atlas original de sprites integrado (personaje, criaturas, árboles, arbustos, refugio y vegetación)
+- [x] Renderizado adaptable de alta densidad (DPR) y cámara/movimiento suavizados
 - [ ] Más regiones, misiones, objetos y criaturas
 
 El proyecto está en desarrollo; esta versión es una base jugable para probar y ampliar.
